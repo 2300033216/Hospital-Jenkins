@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_HOME = '/usr/local/node' // Path to Node.js on Jenkins server
+        PATH = "${env.NODE_HOME}/bin:${env.PATH}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/your-username/frontend-repo.git', branch: 'main'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                # Copy build files to server (example for Linux + Nginx)
+                sh 'cp -r build/* /var/www/html/'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Frontend deployed successfully!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
